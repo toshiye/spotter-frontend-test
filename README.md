@@ -1,36 +1,61 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ✈️ Spotter - Modern Flight Search Engine
+Spotter is a high-performance flight search engine built with Next.js 15 and Tailwind CSS v4. It leverages the Amadeus Self-Service API to provide real-time flight data with an emphasis on intuitive UX, smooth motion, and data visualization.
 
-## Getting Started
+# 🚀 Live Demo & Documentation
+Live Site: [Insert your Vercel Link here]
 
-First, run the development server:
+Loom Walkthrough: [Insert your Loom Link here]
+
+# ✨ Key Features & UX Improvements
+Interactive Price Distribution: A real-time Recharts graph that reflects current search results. Clicking a price point instantly filters the flight list, providing a bidirectional data experience.
+
+"Best Value" Sorting: Implemented a custom algorithm that goes beyond the "cheapest" option, calculating the optimal price-to-duration ratio to find the most efficient flights.
+
+Staggered Motion UI: Used Framer Motion to create staggered entry animations for flight cards, making the loading of results feel fast and fluid.
+
+Smart Autocomplete: A custom-built airport search that handles IATA codes and state lifting for a seamless search experience.
+
+Theme-Aware Design: Full Dark/Light mode support using Tailwind v4 semantic variables, ensuring high contrast and accessibility in any environment.
+
+# 🧠 Engineering & Technical Decisions
+1. Performance Optimization
+To ensure the complex filtering (Airlines + Stops + Price) updates the UI at 60fps, I utilized useMemo hooks for data transformation. This prevents unnecessary recalculations of the flight list and price graph during rapid filter toggling.
+
+2. Architecture: Client vs. Server
+I maintained a strict separation between Server Components for SEO/Metadata and Client Components for interactivity. To enable page transitions, I implemented a ClientWrapper pattern, allowing the root layout to remain server-side while the content handles Framer Motion animations.
+
+3. Robustness & Error Handling
+Hydration Safety: Implemented defensive rendering to ignore injections from browser extensions (like Grammarly) that often break React hydration.
+
+Data Integrity: Added safety checks for API data normalization, ensuring that flights with missing duration or price data do not crash the sorting algorithms or charts.
+
+# 🛠️ Tech Stack
+Framework: Next.js 15 (App Router)
+
+Styling: Tailwind CSS v4
+
+Animations: Framer Motion
+
+Charts: Recharts
+
+Icons: Lucide React / Custom SVG
+
+API: Amadeus Self-Service (Test Environment)
+
+# ⚙️ Local Development
+Clone and Install:
+
+```bash
+git clone [your-repo-link]
+npm install
+Environment Variables: Create a .env.local file in the root and add your Amadeus credentials:
+```
+
+```snippet de código
+AMADEUS_CLIENT_ID=your_id_here
+AMADEUS_CLIENT_SECRET=your_secret_here
+Run Dev:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.

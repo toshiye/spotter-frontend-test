@@ -1,6 +1,7 @@
 'use client';
 
-import { useTheme } from '@/app/providers';
+import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
 import {
     LineChart,
     Line,
@@ -27,19 +28,25 @@ type Props = {
 };
 
 export default function PriceChart({ data, selectedPrice, onSelectPrice, type }: Props) {
-    const { theme } = useTheme();
-    const isDark = theme === 'dark';
-    
-    if (!data.length) return null;
+    const { theme, resolvedTheme } = useTheme();
+    const [mounted, setMounted] = useState(false);
 
-    const textColor = isDark ? '#e5e7eb' : '#000000';
-    const axisColor = isDark ? '#9ca3af' : '#666666';
-    const barColor = isDark ? '#d1d5db' : '#bbb';
-    const selectedColor = isDark ? '#ffffff' : '#000000';
+    useEffect(() => setMounted(true), []);
+
+    if (!data.length || !mounted) return null;
+
+    const isDark = resolvedTheme === 'dark';
+
+    const colors = {
+        text: isDark ? '#fafafa' : '#111827', 
+        axis: isDark ? '#71717a' : '#9ca3af',
+        bar: isDark ? '#3f3f46' : '#d1d5db',
+        selected: isDark ? '#ffffff' : '#000000'
+    };
 
     return (
-        <div className="w-full h-80 bg-white dark:bg-zinc-900 rounded-lg shadow p-4">
-            <h2 className="text-lg font-semibold mb-2 text-black dark:text-white">Price Distribution</h2>
+        <div className="w-full h-80 bg-card-bg border border-card-border rounded-lg shadow p-4 transition-colors duration-300">
+            <h2 className="text-lg font-semibold mb-2 text-app-fg">Price Distribution</h2>
 
             <ResponsiveContainer width="100%" height="100%">
                 {type === "line" ? (
@@ -49,41 +56,42 @@ export default function PriceChart({ data, selectedPrice, onSelectPrice, type }:
                     >
                         <XAxis
                             dataKey="price"
-                            tickFormatter={(v) => `€${v}`}
-                            angle={-30}
+                            tickFormatter={(v) => `€${Math.round(v)}`}
+                            angle={-45}
                             textAnchor="end"
-                            height={60}
-                            stroke={axisColor}
-                            style={{ fontSize: '12px' }}
+                            height={70}
+                            interval="preserveStartEnd" 
+                            minTickGap={10}
+                            stroke={colors.axis}
+                            style={{ fontSize: '10px', fill: colors.text }}
                         />
-                        <YAxis 
-                            allowDecimals={false} 
-                            stroke={axisColor}
-                            style={{ fontSize: '12px' }}
+                        <YAxis
+                            allowDecimals={false}
+                            stroke={colors.axis}
+                            style={{ fontSize: '12px', fill: colors.text }}
                         />
-                        <Tooltip 
+                        <Tooltip
                             formatter={(v) => [v, "Flights"]}
                             contentStyle={{
-                                backgroundColor: isDark ? '#27272a' : '#ffffff',
-                                border: `1px solid ${isDark ? '#3f3f46' : '#e5e7eb'}`,
-                                color: textColor
+                                backgroundColor: isDark ? '#18181b' : '#ffffff',
+                                border: `1px solid ${colors.axis}`,
+                                color: colors.text
                             }}
                         />
 
                         <Line
                             type="monotone"
                             dataKey="count"
-                            stroke={selectedColor}
+                            stroke={colors.selected}
                             strokeWidth={3}
                             dot={({ cx, cy, payload }) => {
                                 const isSelected = payload.price === selectedPrice;
-
                                 return (
                                     <circle
                                         cx={cx}
                                         cy={cy}
                                         r={isSelected ? 7 : 4}
-                                        fill={isSelected ? selectedColor : axisColor}
+                                        fill={isSelected ? colors.selected : colors.axis}
                                     />
                                 );
                             }}
@@ -92,8 +100,8 @@ export default function PriceChart({ data, selectedPrice, onSelectPrice, type }:
                                     cx={cx}
                                     cy={cy}
                                     r={8}
-                                    fill={selectedColor}
-                                    stroke={selectedColor}
+                                    fill={colors.selected}
+                                    stroke={colors.selected}
                                     strokeWidth={2}
                                     style={{ cursor: "pointer" }}
                                     onClick={() => onSelectPrice?.(payload.price)}
@@ -112,20 +120,20 @@ export default function PriceChart({ data, selectedPrice, onSelectPrice, type }:
                             angle={-30}
                             textAnchor="end"
                             height={60}
-                            stroke={axisColor}
-                            style={{ fontSize: '12px' }}
+                            stroke={colors.axis}
+                            style={{ fontSize: '12px', fill: colors.text }}
                         />
-                        <YAxis 
+                        <YAxis
                             allowDecimals={false}
-                            stroke={axisColor}
-                            style={{ fontSize: '12px' }}
+                            stroke={colors.axis}
+                            style={{ fontSize: '12px', fill: colors.text }}
                         />
-                        <Tooltip 
+                        <Tooltip
                             formatter={(v) => [v, "Flights"]}
                             contentStyle={{
-                                backgroundColor: isDark ? '#27272a' : '#ffffff',
-                                border: `1px solid ${isDark ? '#3f3f46' : '#e5e7eb'}`,
-                                color: textColor
+                                backgroundColor: isDark ? '#18181b' : '#ffffff',
+                                border: `1px solid ${colors.axis}`,
+                                color: colors.text
                             }}
                         />
 
@@ -133,14 +141,13 @@ export default function PriceChart({ data, selectedPrice, onSelectPrice, type }:
                             dataKey="count"
                             shape={({ x, y, width, height, payload }) => {
                                 const isSelected = payload.price === selectedPrice;
-
                                 return (
                                     <rect
                                         x={x}
                                         y={y}
                                         width={width}
                                         height={height}
-                                        fill={isSelected ? selectedColor : barColor}
+                                        fill={isSelected ? colors.selected : colors.bar}
                                         onClick={() => onSelectPrice?.(payload.price)}
                                         style={{ cursor: "pointer" }}
                                     />
@@ -150,7 +157,6 @@ export default function PriceChart({ data, selectedPrice, onSelectPrice, type }:
                     </BarChart>
                 )}
             </ResponsiveContainer>
-
         </div>
     );
 }

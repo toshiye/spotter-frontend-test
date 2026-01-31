@@ -5,9 +5,6 @@ const AMADEUS_BASE_URL = "https://test.api.amadeus.com";
 let accessToken: string | null = null;
 let tokenExpiresAt = 0;
 
-/**
- * Get OAuth2 access token (cached until expiration)
- */
 async function getAccessToken(): Promise<string> {
   if (accessToken && Date.now() < tokenExpiresAt) {
     return accessToken;
@@ -40,9 +37,6 @@ async function getAccessToken(): Promise<string> {
   return accessToken as string;
 }
 
-/**
- * Search flight offers
- */
 export async function searchFlights(
   params: FlightSearchParams
 ): Promise<Flight[]> {
@@ -66,7 +60,6 @@ export async function searchFlights(
   url.searchParams.set("adults", adults.toString());
   url.searchParams.set("max", "20");
 
-  // Only include returnDate if provided (round-trip)
   if (returnDate) {
     url.searchParams.set("returnDate", returnDate);
   }
@@ -78,10 +71,6 @@ export async function searchFlights(
       Authorization: `Bearer ${token}`,
     },
   });
-
-  /* if (!response.ok) {
-    throw new Error("Failed to fetch flight offers");
-  } */
 
   if (!response.ok) {
     const errorText = await response.text();
@@ -95,7 +84,6 @@ export async function searchFlights(
 }
 
 function durationToMinutes(duration: string): number {
-  // Example: PT7H45M
   const match = duration.match(/PT(?:(\d+)H)?(?:(\d+)M)?/);
 
   const hours = Number(match?.[1] ?? 0);
@@ -103,10 +91,6 @@ function durationToMinutes(duration: string): number {
 
   return hours * 60 + minutes;
 }
-
-/**
- * Normalize Amadeus API response
- */
 function normalizeFlights(apiResponse: any): Flight[] {
   if (!apiResponse?.data) return [];
 

@@ -1,82 +1,101 @@
 'use client'
 
-// TODO: Replace IATA-only input with airport autocomplete
-// using Amadeus Airport & City Search API for city-friendly search
-
 import { useState } from "react";
 import { FlightSearchParams } from "@/types/flight";
-
-type props = {
+import AirportAutocomplete from "./AirportAutocomplete";
+type Props = {
     onSearch: (params: FlightSearchParams) => void;
     loading?: boolean;
 };
 
-export default function FlightSearchForm({ onSearch, loading = false }: props) {
+export default function FlightSearchForm({ onSearch, loading = false }: Props) {
     const [origin, setOrigin] = useState("");
     const [destination, setDestination] = useState("");
     const [departureDate, setDepartureDate] = useState("");
     const [returnDate, setReturnDate] = useState("");
-    const [adults, setAdults] = useState(1);
+
+    const dateInputClasses = "w-full border border-card-border p-2 rounded-lg bg-card-bg text-app-fg outline-none focus:ring-2 focus:ring-zinc-400 transition-all dark:color-scheme-dark";
 
     function handleSubmit(event: React.FormEvent) {
         event.preventDefault();
+        
+        console.log("Attempting search with:", { origin, destination, departureDate });
 
-        if (!origin || !destination || !departureDate) return;
+        // 1. Basic presence check
+        if (!origin || !destination || !departureDate) {
+            console.warn("Search blocked: Missing fields");
+            return;
+        }
 
-        if (origin.length !== 3 || destination.length !== 3) return;
+        // 2. Clean the strings (remove spaces/lowercase)
+        const cleanOrigin = origin.trim().toUpperCase();
+        const cleanDest = destination.trim().toUpperCase();
+
+        // 3. Validation check
+        if (cleanOrigin.length !== 3 || cleanDest.length !== 3) {
+            console.warn("Search blocked: IATA codes must be 3 letters", { cleanOrigin, cleanDest });
+            return;
+        }
 
         onSearch({
-            origin: origin.trim().toUpperCase(),
-            destination: destination.trim().toUpperCase(),
+            origin: cleanOrigin,
+            destination: cleanDest,
             departureDate,
             returnDate: returnDate || undefined,
-            adults,
+            adults: 1,
         });
     };
+
     return (
-        <form onSubmit={handleSubmit} className="grid gap-4 md:grid-cols-5 bg-white dark:bg-zinc-900 p-4 rounded border border-gray-200 dark:border-zinc-700">
-            <input
-                type="text"
-                placeholder="Origin (IATA: MAD)"
+        <form
+            onSubmit={handleSubmit}
+            className="grid gap-4 md:grid-cols-5 bg-card-bg p-6 rounded-xl border border-card-border shadow-lg transition-colors duration-300 items-end"
+        >
+            {/* 1. Origin Autocomplete */}
+            <AirportAutocomplete
+                label="From"
                 value={origin}
-                maxLength={3}
-                onChange={(e) =>
-                    setOrigin(e.target.value.replace(/[^a-zA-Z]/g, ""))
-                }
-                className="border p-2 rounded uppercase text-black dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 bg-white dark:bg-zinc-800 dark:border-zinc-600"
+                onChange={setOrigin}
+                placeholder="City or Airport"
             />
 
-            <input
-                type="text"
-                placeholder="Destination (IATA: BCN)"
+            {/* 2. Destination Autocomplete */}
+            <AirportAutocomplete
+                label="To"
                 value={destination}
-                maxLength={3}
-                onChange={(e) =>
-                    setDestination(e.target.value.replace(/[^a-zA-Z]/g, ""))
-                }
-                className="border p-2 rounded uppercase text-black dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 bg-white dark:bg-zinc-800 dark:border-zinc-600"
+                onChange={setDestination}
+                placeholder="Where to?"
             />
 
-            <input
-                type="date"
-                value={departureDate}
-                onChange={(e) => setDepartureDate(e.target.value)}
-                className="border p-2 rounded text-black dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 bg-white dark:bg-zinc-800 dark:border-zinc-600"
-            />
+            {/* 3. Departure Date */}
+            <div className="flex flex-col">
+                <label className="text-xs font-bold text-app-fg mb-1 opacity-70 uppercase">Departure</label>
+                <input
+                    type="date"
+                    value={departureDate}
+                    onChange={(e) => setDepartureDate(e.target.value)}
+                    className={dateInputClasses}
+                />
+            </div>
 
-            <input
-                type="date"
-                value={returnDate}
-                onChange={(e) => setReturnDate(e.target.value)}
-                className="border p-2 rounded text-black dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 bg-white dark:bg-zinc-800 dark:border-zinc-600"
-            />
+            {/* 4. Return Date */}
+            <div className="flex flex-col">
+                <label className="text-xs font-bold text-app-fg mb-1 opacity-70 uppercase">Return</label>
+                <input
+                    type="date"
+                    value={returnDate}
+                    onChange={(e) => setReturnDate(e.target.value)}
+                    className={dateInputClasses}
+                />
+            </div>
 
+            {/* 5. Search Button */}
             <button
                 type="submit"
                 disabled={loading}
-                className="bg-black dark:bg-white text-white dark:text-black rounded px-4 py-2 disabled:opacity-50 transition-colors"
+                className="bg-app-fg text-app-bg rounded-lg h-[42px] px-4 py-2 font-bold disabled:opacity-50 hover:opacity-90 transition-all active:scale-95 shadow-md"
             >
-                {loading ? "Searching..." : "Search"}
+                {loading ? "Searching..." : "Search Flights"}
             </button>
         </form>
     );

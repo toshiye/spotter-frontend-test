@@ -49,7 +49,6 @@ export async function GET(request: Request) {
     } catch (error) {
         console.error("Flight search failed:", error);
 
-        /* return NextResponse.json({ error: "Failed to fetch flights." }, { status: 500 }); */
         return NextResponse.json(
             { error: String(error) },
             { status: 500 }

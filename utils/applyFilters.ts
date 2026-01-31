@@ -7,42 +7,33 @@ export function applyFilters(
 ): Flight[] {
   let result = [...flights];
 
-  // Price filter
   if (filters.maxPrice !== undefined) {
-    result = result.filter(
-      (flight) => flight.price <= filters.maxPrice!
-    );
+    result = result.filter((f) => f.price <= (filters.maxPrice ?? Infinity));
   }
 
-  // Stops filter
   if (filters.stops && filters.stops.length > 0) {
-    result = result.filter((flight) =>
-      filters.stops!.includes(flight.stops)
-    );
+    result = result.filter((f) => filters.stops!.includes(f.stops));
   }
 
-  // Airline filter
   if (filters.airlines && filters.airlines.length > 0) {
-    result = result.filter((flight) =>
-      filters.airlines!.includes(flight.airline)
-    );
+    result = result.filter((f) => filters.airlines!.includes(f.airline));
   }
 
   if (filters.sort) {
     result.sort((a, b) => {
-      if (filters.sort === "price") {
-        return a.price - b.price;
+      switch (filters.sort) {
+        case "price":
+          return a.price - b.price;
+        case "duration":
+          return (a.durationMinutes ?? 0) - (b.durationMinutes ?? 0);
+        case "value": {
+          const valA = a.durationMinutes > 0 ? a.price / a.durationMinutes : Infinity;
+          const valB = b.durationMinutes > 0 ? b.price / b.durationMinutes : Infinity;
+          return valA - valB;
+        }
+        default:
+          return 0;
       }
-
-      if (filters.sort === "duration") {
-        return a.durationMinutes - b.durationMinutes;
-      }
-
-      if (filters.sort === "value") {
-        return a.price / a.durationMinutes - b.price / b.durationMinutes;
-      }
-
-      return 0;
     });
   }
 
