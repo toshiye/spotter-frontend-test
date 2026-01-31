@@ -46,7 +46,7 @@ API: Amadeus Self-Service (Test Environment)
 Clone and Install:
 
 ```bash
-git clone [your-repo-link]
+git clone (https://github.com/toshiye/spotter-frontend-test)
 npm install
 Environment Variables: Create a .env.local file in the root and add your Amadeus credentials:
 ```
