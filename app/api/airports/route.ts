@@ -24,7 +24,7 @@ export async function GET(request: Request) {
 
         // 3. Return simplified data
         return NextResponse.json(data.data || []);
-    } catch (error) {
+    } catch (_error) {
         return NextResponse.json({ error: "Failed to fetch airports" }, { status: 500 });
     }
 }

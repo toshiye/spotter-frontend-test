@@ -28,7 +28,7 @@ type Props = {
 };
 
 export default function PriceChart({ data, selectedPrice, onSelectPrice, type }: Props) {
-    const { theme, resolvedTheme } = useTheme();
+    const { resolvedTheme } = useTheme();
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => setMounted(true), []);

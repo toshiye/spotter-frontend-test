@@ -23,7 +23,7 @@ export default function FiltersPanel({ filters, setFilters, airlines }: Props) {
                     onChange={(e) =>
                         setFilters((prev) => ({
                             ...prev,
-                            sort: e.target.value as any || undefined,
+                            sort: (e.target.value as Filters['sort']) || undefined,
                         }))
                     }
                     className={inputClasses}
