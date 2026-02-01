@@ -2,9 +2,9 @@
 Spotter is a high-performance flight search engine built with Next.js 15 and Tailwind CSS v4. It leverages the Amadeus Self-Service API to provide real-time flight data with an emphasis on intuitive UX, smooth motion, and data visualization.
 
 # 🚀 Live Demo & Documentation
-Live Site: [Insert your Vercel Link here]
+Live Site: https://spotter-frontend-test-ochre.vercel.app/
 
-Loom Walkthrough: [Insert your Loom Link here]
+Loom Walkthrough: https://www.loom.com/share/ce0ebf5421474a6facbc3bb1f3eb3c02
 
 # ✨ Key Features & UX Improvements
 Interactive Price Distribution: A real-time Recharts graph that reflects current search results. Clicking a price point instantly filters the flight list, providing a bidirectional data experience.
